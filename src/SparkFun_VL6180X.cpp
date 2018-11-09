@@ -29,10 +29,12 @@
 #include <Wire.h>
 #include "SparkFun_VL6180X.h"
 
+extern TwoWire auxWire;
+
 VL6180x::VL6180x(uint8_t address)
 // Initialize the Library
 {
-  Wire.begin(); // Arduino Wire library initializer
+  auxWire.begin(); // Arduino Wire library initializer
   _i2caddress = address; //set default address for communication
 }
 
@@ -195,12 +197,12 @@ uint8_t VL6180x::VL6180x_getRegister(uint16_t registerAddr)
 {
   uint8_t data;
 
-  Wire.beginTransmission( _i2caddress ); // Address set on class instantiation
-  Wire.write((registerAddr >> 8) & 0xFF); //MSB of register address
-  Wire.write(registerAddr & 0xFF); //LSB of register address
-  Wire.endTransmission(false); //Send address and register address bytes
-  Wire.requestFrom( _i2caddress , 1);
-  data = Wire.read(); //Read Data from selected register
+  auxWire.beginTransmission( _i2caddress ); // Address set on class instantiation
+  auxWire.write((registerAddr >> 8) & 0xFF); //MSB of register address
+  auxWire.write(registerAddr & 0xFF); //LSB of register address
+  auxWire.endTransmission(false); //Send address and register address bytes
+  auxWire.requestFrom( _i2caddress , 1);
+  data = auxWire.read(); //Read Data from selected register
 
   return data;
 }
@@ -211,14 +213,14 @@ uint16_t VL6180x::VL6180x_getRegister16bit(uint16_t registerAddr)
   uint8_t data_high;
   uint16_t data;
 
-  Wire.beginTransmission( _i2caddress ); // Address set on class instantiation
-  Wire.write((registerAddr >> 8) & 0xFF); //MSB of register address
-  Wire.write(registerAddr & 0xFF); //LSB of register address
-  Wire.endTransmission(false); //Send address and register address bytes
+  auxWire.beginTransmission( _i2caddress ); // Address set on class instantiation
+  auxWire.write((registerAddr >> 8) & 0xFF); //MSB of register address
+  auxWire.write(registerAddr & 0xFF); //LSB of register address
+  auxWire.endTransmission(false); //Send address and register address bytes
 
-  Wire.requestFrom( _i2caddress, 2);
-  data_high = Wire.read(); //Read Data from selected register
-  data_low = Wire.read(); //Read Data from selected register
+  auxWire.requestFrom( _i2caddress, 2);
+  data_high = auxWire.read(); //Read Data from selected register
+  data_low = auxWire.read(); //Read Data from selected register
   data = (data_high << 8)|data_low;
 
   return data;
@@ -226,24 +228,24 @@ uint16_t VL6180x::VL6180x_getRegister16bit(uint16_t registerAddr)
 
 void VL6180x::VL6180x_setRegister(uint16_t registerAddr, uint8_t data)
 {
-  Wire.beginTransmission( _i2caddress ); // Address set on class instantiation
-  Wire.write((registerAddr >> 8) & 0xFF); //MSB of register address
-  Wire.write(registerAddr & 0xFF); //LSB of register address
-  Wire.write(data); // Data/setting to be sent to device.
-  Wire.endTransmission(); //Send address and register address bytes
+  auxWire.beginTransmission( _i2caddress ); // Address set on class instantiation
+  auxWire.write((registerAddr >> 8) & 0xFF); //MSB of register address
+  auxWire.write(registerAddr & 0xFF); //LSB of register address
+  auxWire.write(data); // Data/setting to be sent to device.
+  auxWire.endTransmission(); //Send address and register address bytes
 }
 
 void VL6180x::VL6180x_setRegister16bit(uint16_t registerAddr, uint16_t data)
 {
-  Wire.beginTransmission( _i2caddress ); // Address set on class instantiation
-  Wire.write((registerAddr >> 8) & 0xFF); //MSB of register address
-  Wire.write(registerAddr & 0xFF); //LSB of register address
+  auxWire.beginTransmission( _i2caddress ); // Address set on class instantiation
+  auxWire.write((registerAddr >> 8) & 0xFF); //MSB of register address
+  auxWire.write(registerAddr & 0xFF); //LSB of register address
   uint8_t temp;
   temp = (data >> 8) & 0xff;
-  Wire.write(temp); // Data/setting to be sent to device
+  auxWire.write(temp); // Data/setting to be sent to device
   temp = data & 0xff;
-  Wire.write(temp); // Data/setting to be sent to device
-  Wire.endTransmission(); //Send address and register address bytes
+  auxWire.write(temp); // Data/setting to be sent to device
+  auxWire.endTransmission(); //Send address and register address bytes
 }
 
 
